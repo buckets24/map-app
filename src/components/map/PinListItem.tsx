@@ -1,9 +1,20 @@
-import React from 'react';
-import { MapPin, Trash2, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
+import { Loader2, MapPin, Trash2 } from 'lucide-react'
 
-export default function PinListItem({ pin, index, onDelete }) {
+import { Button } from '@/components/ui/button'
+import type { Pin } from '@/types/pin'
+
+type PinListItemProps = {
+  pin: Pin
+  index: number
+  onDelete: (pinId: string) => void
+}
+
+export default function PinListItem({
+  pin,
+  index,
+  onDelete,
+}: PinListItemProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -46,5 +57,5 @@ export default function PinListItem({ pin, index, onDelete }) {
         <Trash2 className="w-4 h-4" />
       </Button>
     </motion.div>
-  );
+  )
 }

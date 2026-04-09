@@ -1,10 +1,15 @@
-import { useMapEvents } from 'react-leaflet';
+import type { LatLng } from 'leaflet'
+import { useMapEvents } from 'react-leaflet'
 
-export default function MapClickHandler({ onMapClick }) {
+type MapClickHandlerProps = {
+  onMapClick: (latlng: LatLng) => void
+}
+
+export default function MapClickHandler({ onMapClick }: MapClickHandlerProps) {
   useMapEvents({
     click(e) {
-      onMapClick(e.latlng);
+      onMapClick(e.latlng)
     },
-  });
-  return null;
+  })
+  return null
 }

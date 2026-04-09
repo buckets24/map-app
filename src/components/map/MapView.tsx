@@ -1,22 +1,28 @@
-import { MapContainer, TileLayer } from 'react-leaflet';
-import MapClickHandler from './MapClickhandler';
-import PinMarkers from './PinMarkers';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import type { LatLng } from 'leaflet'
+import { MapContainer, TileLayer } from 'react-leaflet'
 
-// Fix default marker icon issue with webpack/vite
-// @ts-ignore
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
+import '@/lib/leaflet-icon-defaults'
 
-const DEFAULT_CENTER: [number, number] = [14.5813079, 120.9736056];
-const DEFAULT_ZOOM = 6;
+import MapClickHandler from './MapClickhandler'
+import PinMarkers from './PinMarkers'
+import type { Pin } from '@/types/pin'
 
-export default function MapView({ pins, onMapClick, onDeletePin, onDragEnd }) {
+const DEFAULT_CENTER: [number, number] = [14.5813079, 120.9736056]
+const DEFAULT_ZOOM = 6
+
+type MapViewProps = {
+  pins: Pin[]
+  onMapClick: (latlng: LatLng) => void
+  onDeletePin: (pinId: string) => void
+  onDragEnd: (pinId: string, lat: number, lng: number) => void
+}
+
+export default function MapView({
+  pins,
+  onMapClick,
+  onDeletePin,
+  onDragEnd,
+}: MapViewProps) {
   return (
     <div className="h-full w-full rounded-lg overflow-hidden shadow-lg border border-border">
       <MapContainer
@@ -33,5 +39,5 @@ export default function MapView({ pins, onMapClick, onDeletePin, onDragEnd }) {
         <PinMarkers pins={pins} onDelete={onDeletePin} onDragEnd={onDragEnd} />
       </MapContainer>
     </div>
-  );
+  )
 }

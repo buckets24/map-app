@@ -1,72 +1,91 @@
-import React, { useState, useCallback } from 'react';
-import { MapPin } from 'lucide-react';
-import MapView from '@/components/map/MapView';
-import PinList from '@/components/map/PinList';
+import { useCallback, useState } from 'react'
+import type { LatLng } from 'leaflet'
+import { MapPin } from 'lucide-react'
 
-async function reverseGeocode(lat, lng) {
+import MapView from '@/components/map/MapView'
+import PinList from '@/components/map/PinList'
+import type { Pin } from '@/types/pin'
+
+async function reverseGeocode(
+  lat: number,
+  lng: number,
+): Promise<string | null> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`,
     {
       headers: {
         'Accept-Language': 'en',
         'User-Agent': 'PinDropApp/1.0 (contact@pindrop.app)',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
-    }
-  );
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.display_name || null;
+    },
+  )
+  if (!res.ok) return null
+  const data = (await res.json()) as { display_name?: string }
+  return data.display_name ?? null
 }
 
-const STORAGE_KEY = 'pindrop_pins';
+const STORAGE_KEY = 'pindrop_pins'
 
 export default function App() {
-  const [pins, setPins] = useState(() => {
+  const [pins, setPins] = useState<Pin[]>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      const saved = localStorage.getItem(STORAGE_KEY)
+      return saved ? (JSON.parse(saved) as Pin[]) : []
     } catch {
-      return [];
+      return []
     }
-  });
+  })
 
-  const updateAndPersist = useCallback((updater) => {
+  const updateAndPersist = useCallback((updater: (prev: Pin[]) => Pin[]) => {
     setPins((prev) => {
-      const updated = updater(prev);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      return updated;
-    });
-  }, []);
+      const updated = updater(prev)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+      return updated
+    })
+  }, [])
 
-  const handleDragEnd = useCallback(async (pinId, lat, lng) => {
-    updateAndPersist((prev) =>
-      prev.map((p) => (p.id === pinId ? { ...p, lat, lng, address: null } : p))
-    );
-    const address = await reverseGeocode(lat, lng);
-    updateAndPersist((prev) =>
-      prev.map((p) => (p.id === pinId ? { ...p, lat, lng, address } : p))
-    );
-  }, [updateAndPersist]);
+  const handleDragEnd = useCallback(
+    async (pinId: string, lat: number, lng: number) => {
+      updateAndPersist((prev) =>
+        prev.map((p) =>
+          p.id === pinId ? { ...p, lat, lng, address: null } : p,
+        ),
+      )
+      const address = await reverseGeocode(lat, lng)
+      updateAndPersist((prev) =>
+        prev.map((p) =>
+          p.id === pinId ? { ...p, lat, lng, address } : p,
+        ),
+      )
+    },
+    [updateAndPersist],
+  )
 
-  const handleMapClick = useCallback(async (latlng) => {
-    const newPin = {
-      id: crypto.randomUUID(),
-      lat: latlng.lat,
-      lng: latlng.lng,
-      address: null,
-    };
-    updateAndPersist((prev) => [newPin, ...prev]);
+  const handleMapClick = useCallback(
+    async (latlng: LatLng) => {
+      const newPin: Pin = {
+        id: crypto.randomUUID(),
+        lat: latlng.lat,
+        lng: latlng.lng,
+        address: null,
+      }
+      updateAndPersist((prev) => [newPin, ...prev])
 
-    const address = await reverseGeocode(latlng.lat, latlng.lng);
-    updateAndPersist((prev) =>
-      prev.map((p) => (p.id === newPin.id ? { ...p, address } : p))
-    );
-  }, [updateAndPersist]);
+      const address = await reverseGeocode(latlng.lat, latlng.lng)
+      updateAndPersist((prev) =>
+        prev.map((p) => (p.id === newPin.id ? { ...p, address } : p)),
+      )
+    },
+    [updateAndPersist],
+  )
 
-  const handleDeletePin = useCallback((pinId) => {
-    updateAndPersist((prev) => prev.filter((p) => p.id !== pinId));
-  }, [updateAndPersist]);
+  const handleDeletePin = useCallback(
+    (pinId: string) => {
+      updateAndPersist((prev) => prev.filter((p) => p.id !== pinId))
+    },
+    [updateAndPersist],
+  )
 
   return (
     <div className="min-h-screen bg-background font-inter">
@@ -77,7 +96,9 @@ export default function App() {
             <MapPin className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">Carlo Carpio</h1>
+            <h1 className="text-lg font-semibold text-foreground tracking-tight">
+              Carlo Carpio
+            </h1>
             <p className="text-xs text-muted-foreground -mt-0.5">Dev Assessment</p>
           </div>
         </div>
@@ -103,5 +124,5 @@ export default function App() {
         </div>
       </main>
     </div>
-  );
+  )
 }

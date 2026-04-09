@@ -1,10 +1,17 @@
-import React from 'react';
-import { AnimatePresence } from 'framer-motion';
-import { MapPin, MousePointerClick } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import PinListItem from './PinListItem';
+import { AnimatePresence } from 'framer-motion'
+import { MapPin, MousePointerClick } from 'lucide-react'
 
-export default function PinList({ pins, onDeletePin }) {
+import { ScrollArea } from '@/components/ui/scroll-area'
+import type { Pin } from '@/types/pin'
+
+import PinListItem from './PinListItem'
+
+type PinListProps = {
+  pins: Pin[]
+  onDeletePin: (pinId: string) => void
+}
+
+export default function PinList({ pins, onDeletePin }: PinListProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-1 mb-4">
@@ -46,5 +53,5 @@ export default function PinList({ pins, onDeletePin }) {
         </ScrollArea>
       )}
     </div>
-  );
+  )
 }
