@@ -1,73 +1,49 @@
-# React + TypeScript + Vite
+# map-app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small React application for placing pins on an interactive map: click the map to add a location, drag markers to move them, and manage pins from a sidebar list. Addresses are resolved with OpenStreetMap’s Nominatim API, and pins are persisted in the browser with `localStorage`.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Map** — [Leaflet](https://leafletjs.com/) via [react-leaflet](https://react-leaflet.js.org/), OpenStreetMap raster tiles
+- **Pins** — add on click, delete from the list, drag to reposition
+- **Geocoding** — reverse geocode via [Nominatim](https://nominatim.org/) (display names for coordinates)
+- **Persistence** — pins stored under the key `pindrop_pins` in `localStorage`
+- **UI** — [Tailwind CSS](https://tailwindcss.com/) v4, [shadcn/ui](https://ui.shadcn.com/) (Nova / Radix), [Framer Motion](https://www.framer.com/motion/) where used
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer | Technology |
+| --- | --- |
+| Runtime | React 19, TypeScript |
+| Build | Vite 8 |
+| Map | leaflet, react-leaflet |
+| Styling | Tailwind CSS v4 (`@tailwindcss/vite`), Geist (variable font) |
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the URL shown in the terminal (usually `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start dev server with HMR |
+| `npm run build` | Typecheck (`tsc -b`) and production build |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint` | Run ESLint |
+
+## Map services
+
+- **Tiles** — © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors
+- **Geocoding** — [Nominatim usage policy](https://operations.osmfoundation.org/policies/nominatim/) applies; the app sends a descriptive `User-Agent` header. For heavy or production use, host your own Nominatim instance or use a commercial geocoder.
+
+## Project layout (high level)
+
+- `src/App.tsx` — pin state, persistence, geocoding handlers
+- `src/components/map/` — `MapView`, markers, click handler, pin list UI
+- `src/lib/leaflet-icon-defaults.ts` — default marker assets for bundlers (Vite)
