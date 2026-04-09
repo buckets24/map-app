@@ -112,7 +112,6 @@ export default function App() {
             <MapView
               pins={pins}
               onMapClick={handleMapClick}
-              onDeletePin={handleDeletePin}
               onDragEnd={handleDragEnd}
             />
           </div>

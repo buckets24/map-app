@@ -13,14 +13,12 @@ const DEFAULT_ZOOM = 6
 type MapViewProps = {
   pins: Pin[]
   onMapClick: (latlng: LatLng) => void
-  onDeletePin: (pinId: string) => void
   onDragEnd: (pinId: string, lat: number, lng: number) => void
 }
 
 export default function MapView({
   pins,
   onMapClick,
-  onDeletePin,
   onDragEnd,
 }: MapViewProps) {
   return (
@@ -36,7 +34,7 @@ export default function MapView({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapClickHandler onMapClick={onMapClick} />
-        <PinMarkers pins={pins} onDelete={onDeletePin} onDragEnd={onDragEnd} />
+        <PinMarkers pins={pins} onDragEnd={onDragEnd} />
       </MapContainer>
     </div>
   )
